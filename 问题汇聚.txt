@@ -1,0 +1,16 @@
+1.ACCEPT DROP REJECT ....
+
+2.NEW ESTABLISHED RELATED INVALID
+
+3.SYN_RECV   SYN_SEND  TIME_WAIT CLOSE_WAIT
+
+4.为什么NAT和filter需要连接跟踪机制?
+
+5.三次握手中的seq值含义？
+sequere number
+记录client端到目前为止，总共传送了多少byte数据给server端
+
+6.netfilter工作在网络层
+为什么可以匹配mac
+如：
+iptables -A INPUT -p icmp -m mac --mac-source 04:ea:56:31:86:25 -j DROP

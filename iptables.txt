@@ -1,0 +1,54 @@
+1.给防火墙添加默认策略
+iptables -P INPUT DROP
+
+2.放行ssh端口22的包
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
+3.放行以下几种状态的包NEW,ESTABLISHED,RELATED
+iptables -A INPUT -p tcp -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+
+4.添加SNAT规则
+iptables -t nat -A POSTROUTING -o ens33 -s 192.168.43.0/24 -j SNAT --to 1.1.1.1
+
+5.本机能ping通别的机，别的机ping不通本机
+iptables -A INPUT -p icmp --icmp-type 8 -j DROP
+
+6.匹配封包的数据内容
+iptables -A FORWARD -i ens33 -o ens33 -p tcp -d 1.1.1.1 --dport 80 -m string --algo bm --string "test" -j DROP
+
+7.指定封包长度
+iptables -A INPUT -p icmp -m length --length 84 -j DROP
+
+8.阻断广播包
+ping -b 192.168.43.255
+iptables -A INPUT -p icmp -m pkttype --pkt-type broadcast -j DROP
+
+9.多端口匹配
+iptables -A INPUT -p tcp -m multiport --dport 20,21 -j DROP
+
+10.mark匹配
+iptables -t mangle -A PREROUTING -p icmp -j MARK --set-mark 80
+iptables -A INPUT -p icmp -m mark --mark 80 -j DROP
+
+11.iprange匹配
+iptables -A INPUT -p icmp  -m iprange --src-range 192.168.43.1-192.168.43.255 -j DROP
+
+12.根据ttl数匹配
+iptables -A IPNUT -p icmp -m ttl --ttl-gt 30 -j REJECT
+
+13.自定义链与RETURN
+iptables -N ICMP_INPUT（删除X）
+iptables -A INPUT -j ICMP_INPUT
+
+14.回应封包丢弃信息
+iptables -A INPUT -p tcp -m multiport --dport 20,21 -j REJECT --reject-with icmp-net-Unreachable
+
+15.添加日志
+iptables -A INPUT -p icmp -j ULOG --ulog-prefix "icmp packet"
+
+16.mac匹配
+iptables -A INPUT -p icmp -m mac --mac-source 04:ea:56:31:86:25 -j DROP
+
+
+
+
