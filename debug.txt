@@ -1,0 +1,6 @@
+printk("%s: proto %d isn't netns-ready\n",__func__, protocol);
+
+make -j4
+make modules_install
+make install
+						
